@@ -18,7 +18,7 @@ class Periksa
                 ps.nama as nama_pasien, pm.nama as nama_paramedik
                 FROM periksa p
                 LEFT JOIN pasien ps ON ps.id = p.pasien_id
-                LEFT JOIN paramedik pm ON pm.id = p.paramedik_id
+                LEFT JOIN paramedik pm ON pm.id = p.paramedik_id -- Pastikan kolom ini ADA di tabel periksa
             ");
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -40,7 +40,7 @@ class Periksa
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $data ?: null; // Return null if no data found
+            return $data ?: null;
         } catch (PDOException $e) {
             die('Query failed: ' . $e->getMessage());
         }
@@ -51,7 +51,7 @@ class Periksa
         try {
             $this->validateForeignKey('pasien', $data['pasien_id']);
             $this->validateForeignKey('paramedik', $data['paramedik_id']);
-    
+
             $sql = "INSERT INTO periksa (tanggal, berat, tinggi, tensi, keterangan, pasien_id, paramedik_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
@@ -75,7 +75,6 @@ class Periksa
     public function update($id, $data)
     {
         try {
-            // Validasi pasien_id dan paramedik_id
             $this->validateForeignKey('pasien', $data['pasien_id']);
             $this->validateForeignKey('paramedik', $data['paramedik_id']);
 
